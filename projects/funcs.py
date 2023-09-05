@@ -5,18 +5,19 @@ from peewee import PeeweeException
 from color_print import ColorPrint as cprint
 from contracts.funcs import list_contracts
 from models import Contract, Project
-
+from peewee import IntegrityError
+from exceptions import ProjectConditionError
 
 def is_no_projects():
     projects = Project.select()
     return len(projects) == 0
 
 
-def create_project():
+def create_project(name=None):
     active_contracts = Contract.select().where(Contract.status == "active")
     if not active_contracts:
-        cprint.print_fail("!Add active contracts")
-        return
+        cprint.print_fail()
+        raise ProjectConditionError("!Add active contracts")
     while True:
         name = input("Type project name(or 0 to cancel): ")
         if name == "0":
@@ -30,6 +31,23 @@ def create_project():
             break
         except Exception as e:
             cprint.print_fail(e.message)
+
+    if not name:
+        while True:
+            name = input("Type contract name: ")
+            if name:
+                break
+        
+    try:
+        contract = Contract.create(
+            title=name, created_at=datetime.now(), status="draft"
+        )
+        return contract
+        cprint.print_pass(f"Contract {contract.id} created")
+    except IntegrityError:
+        cprint.print_fail("Name in use")
+    except Exception as e:
+        cprint.print_fail(e)
 
 
 def choose_project():
