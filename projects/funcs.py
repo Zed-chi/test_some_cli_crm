@@ -1,109 +1,79 @@
 from datetime import datetime
 
-from peewee import PeeweeException
+from peewee import IntegrityError, PeeweeException
 
 from color_print import ColorPrint as cprint
-from contracts.funcs import list_contracts
+from contracts.funcs import get_contract_from_cli_id, list_contracts
+from exceptions import CancelException, ProjectConditionError
 from models import Contract, Project
-from peewee import IntegrityError
-from exceptions import ProjectConditionError
+
 
 def is_no_projects():
     projects = Project.select()
     return len(projects) == 0
 
 
-def create_project(name=None):
-    active_contracts = Contract.select().where(Contract.status == "active")
-    if not active_contracts:
-        cprint.print_fail()
-        raise ProjectConditionError("!Add active contracts")
+def get_project_name():
     while True:
         name = input("Type project name(or 0 to cancel): ")
         if name == "0":
-            return
+            raise CancelException()
         if not name:
             cprint.print_fail("!Empty data")
             continue
-        try:
-            project = Project.create(title=name, created_at=datetime.now())
-            cprint.print_info(f"Project {project.id} created")
-            break
-        except Exception as e:
-            cprint.print_fail(e.message)
+        return name
 
+
+def create_project(name=None):
+    active_contracts = Contract.select().where(Contract.status == "active")
+    if not active_contracts:
+        raise ProjectConditionError("Add at leats one active contract")
     if not name:
-        while True:
-            name = input("Type contract name: ")
-            if name:
-                break
-        
+        name = get_project_name()
     try:
-        contract = Contract.create(
-            title=name, created_at=datetime.now(), status="draft"
-        )
-        return contract
-        cprint.print_pass(f"Contract {contract.id} created")
-    except IntegrityError:
+        project = Project.create(title=name, created_at=datetime.now())
+        cprint.print_info(f"Project {project.id} created")
+        return project
+    except IntegrityError as e:
         cprint.print_fail("Name in use")
-    except Exception as e:
-        cprint.print_fail(e)
 
 
 def choose_project():
     if is_no_projects():
-        cprint.print_fail("!No projects created")
-        return
+        raise ValueError("!No projects created")
     list_projects()
     while True:
         _id = input("Type project id: ")
         if not _id:
-            cprint.print_fail("!Empty data")
-            continue
+            raise ValueError("!Empty data")
         try:
             project = Project.get(id=_id)
             return project
         except Exception as e:
-            cprint.print_fail(e.message)
+            raise ValueError("Project Not found")
 
 
-def add_contract():
+def add_contract(project=None, contract=None):
     contracts = Contract.select()
     if not contracts:
-        cprint.print_fail("No contracts...")
-        return
+        raise ValueError("No available contracts...")
 
-    project = choose_project()
     if not project:
-        cprint.print_fail("Not found Project")
-        return
+        project = choose_project()
 
     if project.active_contracts:
-        cprint.print_fail("!Project has contract")
-        return
+        raise ValueError("!Project has active contract")
 
-    list_contracts()
-    while True:
-        _id = input("Type contract id (or 0 to go back): ")
-        if _id == "0":
-            return
-        if not _id:
-            cprint.print_fail("!Empty data")
-            continue
-        try:
-            contract = Contract.get(id=_id)
-            if contract.project:
-                cprint.print_fail("This contract already in use")
-                continue
-            elif contract.status != "active":
-                cprint.print_fail("This contract already in use")
-                continue
-            contract.project = project
-            contract.save()
-            cprint.print_pass("Contract added")
-            break
-        except Exception as e:
-            cprint.print_fail(e.message)
+    if not contract:
+        list_contracts()
+        contract = get_contract_from_cli_id()
+    if contract.project:
+        raise ValueError("This contract already in use")
+    elif contract.status != "active":
+        raise ValueError("This contract is not an active")
+    contract.project = project
+    contract.save()
+    cprint.print_pass("Contract added")
 
 
 def list_active_contracts(project):
@@ -112,36 +82,23 @@ def list_active_contracts(project):
         cprint.print_info(f"{i.id} - {i.title}")
 
 
-def finish_project_contract():
-    project = choose_project()
+def finish_project_contract(project=None, contract=None):
     if not project:
-        cprint.print_fail("Not found project")
-        return
-    if not project.active_contracts:
-        cprint.print_fail("Project has active contracts")
-        return
+        project = choose_project()
 
-    while True:
-        list_active_contracts(project)
-        _id = input("Type contract id (or 0 to go back): ")
-        if _id == "0":
-            return
-        if not _id:
-            cprint.print_fail("Empty data")
-            continue
-        try:
-            contract = Contract.get(id=_id)
-            if contract.project != project:
-                cprint.print_fail("Different project contract")
-                continue
-            if contract.status != "active":
-                cprint.print_fail("Not an active project")
-                continue
-            contract.status = "finished"
-            contract.save()
-            cprint.print_pass("Contract finished")
-        except Exception as e:
-            cprint.print_fail("Cant find contract")
+    if not project.active_contracts:
+        raise ValueError("Project has no active contracts")
+
+    if not contract:
+        contract = get_contract_from_cli_id()
+    if contract.project != project:
+        raise ValueError("Different project contract")
+
+    if contract.status != "active":
+        raise ValueError("Not an active project")
+    contract.status = "finished"
+    contract.save()
+    cprint.print_pass("Contract finished")
 
 
 def list_projects():
