@@ -86,17 +86,14 @@ class TestStringMethods(unittest.TestCase):
         project2 = create_project("TestProject2")
         add_contract(project, contract)
         self.assertRaises(ValueError, add_contract, project2, contract)
-        
 
     def test_contract_project_field_while_adding(self):
-        contract = create_contract("TestContract")        
+        contract = create_contract("TestContract")
         sign_contract(contract)
         self.assertIsNone(contract.project)
-        project = create_project("TestProject")        
+        project = create_project("TestProject")
         add_contract(project, contract)
         self.assertIsNotNone(contract)
-
-        
 
 
 if __name__ == "__main__":
