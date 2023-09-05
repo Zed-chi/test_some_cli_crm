@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from color_print import ColorPrint as cprint
-from models import Contract
-from exceptions import CancelException
 from peewee import IntegrityError
+
+from color_print import ColorPrint as cprint
+from exceptions import CancelException
+from models import Contract
 
 
 def list_contracts(status=None):
@@ -26,7 +27,7 @@ def create_contract(name=None):
             name = input("Type contract name: ")
             if name:
                 break
-        
+
     try:
         contract = Contract.create(
             title=name, created_at=datetime.now(), status="draft"
@@ -64,7 +65,8 @@ def get_contract_from_cli_id():
             contract = Contract.get(id=_id)
             return contract
         except Exception as e:
-            cprint.print_fail(e)
+            raise ValueError("Contract Not Found")
+
 
 def finish_contract():
     while True:
