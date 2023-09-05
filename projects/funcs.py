@@ -90,6 +90,7 @@ def finish_project_contract(project=None, contract=None):
         raise ValueError("Project has no active contracts")
 
     if not contract:
+        list_active_contracts(project)
         contract = get_contract_from_cli_id()
     if contract.project != project:
         raise ValueError("Different project contract")
