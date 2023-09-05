@@ -57,7 +57,7 @@ def sign_contract(contract=None):
 
 def get_contract_from_cli_id():
     while True:
-        _id = input("Type contract id to sign (or 0 to go back): ")
+        _id = input("Type contract id to find (or 0 to go back): ")
         if _id == "0":
             raise CancelException()
         if not _id:
