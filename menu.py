@@ -48,7 +48,10 @@ class MenuItem:
         while True:
             self.show()
             if self.func:
-                result = self.func()
+                try:
+                    result = self.func()
+                except Exception as e:
+                    cprint.print_fail(str(e))
                 return "back"
 
             num = get_choice()
