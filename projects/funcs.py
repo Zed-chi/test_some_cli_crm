@@ -109,7 +109,7 @@ def list_projects():
         cprint.print_fail("No projects created")
     else:
         data = [
-            [i.id, i.title, (i.active_contracts is True), len(i.contracts)]
+            [i.id, i.title, (len(i.active_contracts)>0), len(i.contracts)]
             for i in projects
         ]
         data.insert(0, ["id", "title", "has act contract", "all contracts"])
