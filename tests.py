@@ -3,9 +3,10 @@ import unittest
 from peewee import SqliteDatabase
 
 from contracts.funcs import create_contract, sign_contract
-from projects.funcs import add_contract,create_project
-from models import Contract, Project
 from exceptions import ProjectConditionError
+from models import Contract, Project
+from projects.funcs import (add_contract, create_project,
+                            finish_project_contract)
 
 MODELS = [Project, Contract]
 test_db = SqliteDatabase(":memory:")
@@ -54,7 +55,6 @@ class TestStringMethods(unittest.TestCase):
         contract2 = create_contract("TestContract2")
         self.assertRaises(ValueError, add_contract, project, contract2)
         add_contract(project, contract)
-        
 
     def test_project_add_only_one_active_contract(self):
         contract = create_contract("TestContract")
@@ -75,15 +75,28 @@ class TestStringMethods(unittest.TestCase):
         add_contract(project, contract)
         add_contract(project2, contract2)
 
-        self.assertRaises(ValueError, add_contract, project, contract2)
-        
-
+        self.assertRaises(ValueError, finish_project_contract, project, contract2)
 
     def test_project_cant_add_foreign_contract(self):
-        pass
+        contract = create_contract("TestContract")
+        contract2 = create_contract("TestContract2")
+        sign_contract(contract)
+        sign_contract(contract2)
+        project = create_project("TestProject")
+        project2 = create_project("TestProject2")
+        add_contract(project, contract)
+        self.assertRaises(ValueError, add_contract, project2, contract)
+        
 
     def test_contract_project_field_while_adding(self):
-        pass
+        contract = create_contract("TestContract")        
+        sign_contract(contract)
+        self.assertIsNone(contract.project)
+        project = create_project("TestProject")        
+        add_contract(project, contract)
+        self.assertIsNotNone(contract)
+
+        
 
 
 if __name__ == "__main__":
