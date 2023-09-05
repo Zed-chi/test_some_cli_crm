@@ -4,8 +4,8 @@ show options
 choose option
 exit
 """
-import sys
 import os
+import sys
 
 from color_print import ColorPrint as cprint
 
@@ -45,14 +45,14 @@ class MenuItem:
     def loop(self):
         if not self.children and not self.func:
             return
-        while True:          
+        while True:
             self.show()
             if self.func:
                 result = self.func()
                 return "back"
 
             num = get_choice()
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             if num + 1 > len(self.children) or num + 1 < 0:
                 print(
                     f"{num+1} > {len(self.children)} or {num+1} < {len(self.children)}"
