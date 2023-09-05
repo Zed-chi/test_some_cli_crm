@@ -25,7 +25,7 @@ Logic:
 2.Contract_menu
     - Create
     - Sign
-    - Finish 
+    - Finish
     - List All
 3. List Info
 4.Exit

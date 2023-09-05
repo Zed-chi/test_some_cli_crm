@@ -7,7 +7,7 @@ Logic:
 2.Contract_menu
     - Create
     - Sign
-    - Finish 
+    - Finish
     - List All
 """
 

@@ -85,6 +85,5 @@ def finish_contract():
             cprint.print_pass("Contract finished")
             break
         except Exception as e:
-            cprint.print_fail(e.__str__)
-        except:
-            cprint.print_fail("fok")
+            cprint.print_fail(str(e))
+

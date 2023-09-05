@@ -35,7 +35,7 @@ def create_project(name=None):
         project = Project.create(title=name, created_at=datetime.now())
         cprint.print_info(f"Project {project.id} created")
         return project
-    except IntegrityError as e:
+    except IntegrityError:
         cprint.print_fail("Name in use")
 
 
@@ -50,7 +50,7 @@ def choose_project():
         try:
             project = Project.get(id=_id)
             return project
-        except Exception as e:
+        except Exception:
             raise ValueError("Project Not found")
 
 
@@ -78,7 +78,7 @@ def add_contract(project=None, contract=None):
 
 
 def list_active_contracts(project):
-    cprint.print_warn(f"[Project Active contracts]")
+    cprint.print_warn("[Project Active contracts]")
     for i in project.active_contracts:
         cprint.print_info(f"{i.id} - {i.title}")
 

@@ -15,7 +15,7 @@ def get_choice():
         try:
             choice = int(input("Choose Option >> "))
             return choice
-        except:
+        except Exception:
             cprint.print_fail("wrong menu num")
 
 
