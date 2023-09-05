@@ -1,8 +1,10 @@
-from models import Project, Contract
 from datetime import datetime
-from contracts.funcs import list_contracts
-from color_print import ColorPrint as cprint
+
 from peewee import PeeweeException
+
+from color_print import ColorPrint as cprint
+from contracts.funcs import list_contracts
+from models import Contract, Project
 
 
 def is_no_projects():
@@ -52,12 +54,12 @@ def add_contract():
     if not contracts:
         cprint.print_fail("No contracts...")
         return
-    
+
     project = choose_project()
     if not project:
         cprint.print_fail("Not found Project")
         return
-    
+
     if project.active_contracts:
         cprint.print_fail("!Project has contract")
         return
@@ -122,7 +124,6 @@ def finish_project_contract():
             cprint.print_pass("Contract finished")
         except Exception as e:
             cprint.print_fail("Cant find contract")
-
 
 
 def list_projects():

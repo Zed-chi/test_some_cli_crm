@@ -1,11 +1,14 @@
-from menu import MenuItem
+from colorama import just_fix_windows_console
+
 from config import db
-from models import Contract, Project
 from contracts.options import contracts
+from menu import MenuItem
+from models import Contract, Project
 from projects.options import projects
 
-from colorama import just_fix_windows_console
 just_fix_windows_console()
+
+
 def init():
     db.connect()
     db.create_tables([Contract, Project])

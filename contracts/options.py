@@ -1,4 +1,5 @@
 from menu import MenuItem
+
 from . import funcs
 
 """

@@ -1,6 +1,7 @@
-from models import Contract
 from datetime import datetime
+
 from color_print import ColorPrint as cprint
+from models import Contract
 
 
 def list_contracts(status=None):

@@ -5,7 +5,9 @@ choose option
 exit
 """
 import sys
+
 from color_print import ColorPrint as cprint
+
 
 def get_choice():
     while True:
@@ -61,4 +63,3 @@ class MenuItem:
             result = item.loop()
             if result == "back":
                 return
-

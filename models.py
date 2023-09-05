@@ -1,4 +1,5 @@
 from peewee import *
+
 from config import db
 
 
@@ -13,7 +14,7 @@ class Project(Base):
 
     @property
     def active_contracts(self):
-        return self.contracts.where(Contract.status=="active")
+        return self.contracts.where(Contract.status == "active")
 
 
 class Contract(Base):
