@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from peewee import IntegrityError
+from terminaltables import DoubleTable
 
 from color_print import ColorPrint as cprint
 from exceptions import CancelException
@@ -15,10 +16,11 @@ def list_contracts(status=None):
     if not contracts:
         cprint.print_fail("No contracts")
         return
-    cprint.print_pass("--- Data ---")
-    cprint.print_info(f"id\tstatus\ttitle")
-    for i in contracts:
-        cprint.print_info(f"{i.id}\t{i.status}\t{i.title}")
+    data = [[i.id, i.title, i.status] for i in contracts]
+    data.insert(0, ["id", "title", "status"])
+    table = DoubleTable(data)
+    table.title = "Contracts List"
+    print(table.table)
 
 
 def create_contract(name=None):

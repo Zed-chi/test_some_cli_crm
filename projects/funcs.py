@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from peewee import IntegrityError, PeeweeException
+from peewee import IntegrityError
+from terminaltables import DoubleTable
 
 from color_print import ColorPrint as cprint
 from contracts.funcs import get_contract_from_cli_id, list_contracts
@@ -107,6 +108,11 @@ def list_projects():
     if not len(projects):
         cprint.print_fail("No projects created")
     else:
-        cprint.print_pass("--- Data ---")
-        for prj in projects:
-            cprint.print_info(f"{prj.id} - {prj.title}")
+        data = [
+            [i.id, i.title, (i.active_contracts is True), len(i.contracts)]
+            for i in projects
+        ]
+        data.insert(0, ["id", "title", "has act contract", "all contracts"])
+        table = DoubleTable(data)
+        table.title = "Projects List"
+        print(table.table)
